@@ -2,18 +2,7 @@
 /**
   ******************************************************************************
   * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
+  * @brief          : Main program body (only the threads are in this file)
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -32,14 +21,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "tx_api.h"
-#include "nx_api.h"
-#include "nx_wifi.h"
-#include "cmsis_utils.h"
-#include "stm32l4s5i_iot01_accelero.h"
-#include "stm32l4s5i_iot01_tsensor.h"
-#include "wifi.h"
-#include "nxd_mqtt_client.h"
+#include "sensor_telemetry_setup.h"
+#include "sensor_telemetry.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,71 +37,30 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 /* USER CODE BEGIN PTD */
-#define STACK_SIZE 4096
-#define BYTE_POOL_SIZE 32768
-#define BLOCK_POOL_SIZE 100
-#define QUEUE_SIZE 100
-#define EVT_BUTTON_PRESSED 0x1
-#define EVT_WIFI_READY 0x4
-
-#define WIFI_AP_SSID "Hello Home"  // TODO: change this to yours
-#define WIFI_AP_KEY "TaiwanNumbaOne"  // TODO: change this to yours
-#define TX_PACKET_COUNT 20
-#define TX_PACKET_SIZE 1200  // default payload size from ES_WIFI_PAYLOAD_SIZE
-#define TX_POOL_SIZE ((TX_PACKET_SIZE + sizeof(NX_PACKET)) * TX_PACKET_COUNT)
-#define MQTT_BROKER_IP IP_ADDRESS(192, 168, 11, 124)  // TODO: change this IP address to yours
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-struct global_data_t {
-    TX_THREAD threads[5];
-    TX_THREAD thread_network_setup;
-    TX_BYTE_POOL byte_pool_0;
-    TX_MUTEX mutex_led;  // TODO: add the button handler back in here
-    TX_MUTEX mutex_i2c2;
-    TX_MUTEX mutex_mqtt;
-    TX_MUTEX mutex_network_reset;
-    TX_BLOCK_POOL block_pool_0;
-    UCHAR memory_area[BYTE_POOL_SIZE];
-
-    NX_IP nx_ip;
-    NX_PACKET_POOL nx_pool;
-    UCHAR nx_ip_pool[TX_POOL_SIZE];
-    NXD_ADDRESS mqtt_server_ip;
-    ULONG mqtt_client_stack[STACK_SIZE / sizeof(ULONG)];
-    NXD_MQTT_CLIENT mqtt_client;
-    TX_EVENT_FLAGS_GROUP mqtt_event_flags;
-
-    ULONG interval_ld1;
-    ULONG interval_ld2;
-    ULONG interval_temperature;
-    ULONG interval_accelerometer;
-    ULONG interval_mqtt;
-};
-
-TX_EVENT_FLAGS_GROUP global_event_flags;
+static TX_EVENT_FLAGS_GROUP global_event_flags;
 TX_BYTE_POOL global_byte_pool;
-ULONG global_memory_area[sizeof(struct global_data_t) / sizeof(ULONG)];
-
-void thread_network_setup(ULONG global_data_ulong);
-_Noreturn void blink_PA_5(ULONG global_data_ulong);
-_Noreturn void blink_PB_14(ULONG global_data_ulong);
-_Noreturn void thread_temperature(ULONG global_data_ulong);
-_Noreturn void thread_accelerometer(ULONG global_data_ulong);
+ULONG global_memory_area[(sizeof(struct global_data_t) / sizeof(ULONG)) + 10 * sizeof(ULONG)];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void thread_network_setup(ULONG global_data_ulong);
+_Noreturn void blink_PA_5(ULONG global_data_ulong);
+_Noreturn void blink_PB_14(ULONG global_data_ulong);
+_Noreturn void thread_temperature(ULONG global_data_ulong);
+_Noreturn void thread_accelerometer(ULONG global_data_ulong);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 /**
- * @brief interrupt handler to set event flags
+ * @brief interrupt handler to set software interrupts
  * @param GPIO_Pin
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
@@ -129,6 +71,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
         SPI_WIFI_ISR();
     }
 }
+
+
 /**
  * @brief handle the spi3 interrupt (for Wifi/BLE)
  */
@@ -136,6 +80,7 @@ void SPI3_IRQHandler(void)
 {
     HAL_SPI_IRQHandler(&hspi);
 }
+
 
 /**
  * @brief function for defining the ThreadX application
@@ -149,10 +94,11 @@ void tx_application_define(void* first_unused_memory) {
 
     status = tx_event_flags_create(&global_event_flags, "global event flags");
     status = tx_byte_pool_create(&global_byte_pool, "global byte pool",
-                                 global_memory_area, sizeof(struct global_data_t) << 1);
+                                 global_memory_area, sizeof(struct global_data_t) + 10 * sizeof(ULONG));
 
     /* allocate global data structure */
-    status = tx_byte_allocate(&global_byte_pool, (VOID**)&pointer, sizeof(struct global_data_t), TX_NO_WAIT);
+    status = tx_byte_allocate(&global_byte_pool, (VOID**)&pointer,
+                              sizeof(struct global_data_t), TX_NO_WAIT);
     struct global_data_t* global_data = (struct global_data_t*)pointer;
     global_data->interval_mqtt = 1;
     global_data->interval_accelerometer = 1;
@@ -163,7 +109,6 @@ void tx_application_define(void* first_unused_memory) {
     /* initialize synchronization primitives */
     status = tx_mutex_create(&global_data->mutex_mqtt, "MQTT client mutex", TX_NO_INHERIT);
     status = tx_mutex_create(&global_data->mutex_i2c2, "I2C channel 2 mutex", TX_NO_INHERIT);
-    status = tx_mutex_create(&global_data->mutex_led, "LED mutex", TX_NO_INHERIT);
     status = tx_mutex_create(&global_data->mutex_network_reset, "network setup mutex", TX_NO_INHERIT);
 
     status = tx_byte_pool_create(&global_data->byte_pool_0, "byte pool 0",
@@ -178,14 +123,16 @@ void tx_application_define(void* first_unused_memory) {
         printf("thread creation failed\r\n");
 
     tx_byte_allocate(&global_data->byte_pool_0, (VOID **) &pointer, STACK_SIZE, TX_NO_WAIT);
-    status = tx_thread_create(&global_data->threads[0], "thread 0", blink_PA_5, (ULONG)global_data,
+    status = tx_thread_create(&global_data->threads[0], "thread 0",
+                              blink_PA_5, (ULONG)global_data,
                               pointer, STACK_SIZE,
                               3, 3, TX_NO_TIME_SLICE, TX_AUTO_START);
     if (status != TX_SUCCESS)
         printf("thread creation failed\r\n");
 
     tx_byte_allocate(&global_data->byte_pool_0, (VOID **) &pointer, STACK_SIZE, TX_NO_WAIT);
-    status = tx_thread_create(&global_data->threads[1], "thread 1", blink_PB_14, (ULONG)global_data,
+    status = tx_thread_create(&global_data->threads[1], "thread 1",
+                              blink_PB_14, (ULONG)global_data,
                               pointer, STACK_SIZE,
                               3, 3, TX_NO_TIME_SLICE, TX_AUTO_START);
     if (status != TX_SUCCESS)
@@ -206,154 +153,6 @@ void tx_application_define(void* first_unused_memory) {
                               2, 2, TX_NO_TIME_SLICE, TX_AUTO_START);
     if (status != TX_SUCCESS)
         printf("thread creation failed\r\n");
-}
-
-
-/**
- * @brief setup the wifi driver (uses global variables in wifi.h; configures SPI3 Inventek module)
- */
-UINT setup_wifi(bool scan_for_aps) {
-    UINT status;
-    uint8_t max_aps = 10;
-    status = WIFI_Init();
-    if (status != WIFI_STATUS_OK)
-        return status;
-    if (scan_for_aps == true) {
-        WIFI_APs_t aps;
-        while (WIFI_ListAccessPoints(&aps, max_aps) != WIFI_STATUS_OK) {
-            tx_thread_sleep(100);
-        }
-        printf("%d", aps.count);
-    }
-    while (WIFI_Connect(WIFI_AP_SSID, WIFI_AP_KEY, WIFI_ECN_WPA2_PSK) != WIFI_STATUS_OK) {
-        tx_thread_sleep(100);
-    }
-    uint8_t goog_ip[] = {8, 8, 8, 8};
-    uint16_t ping_count = 10;
-    int32_t ping_result[ping_count];
-    while (WIFI_Ping(goog_ip, ping_count, 10, ping_result) != WIFI_STATUS_OK) {
-        tx_thread_sleep(100);
-    }
-    printf("%ld", ping_result[0]);
-    return WIFI_STATUS_OK;
-}
-
-
-/**
- * @brief cleanup the wifi driver
- */
-void cleanup_wifi() {
-    WIFI_Disconnect();
-}
-
-
-/**
- * @brief sets up NetX Duo to work with the wifi driver
- * @param global_data: pointer to the global data structure
- * @return
- */
-UINT setup_nx_wifi(struct global_data_t* global_data) {
-    UINT status;
-    uint8_t ip_address[4];
-    nx_system_initialize();
-    status = nx_packet_pool_create(&global_data->nx_pool, "NX Packet Pool", TX_PACKET_SIZE,
-                                   global_data->nx_ip_pool, TX_POOL_SIZE);
-    if (status != NX_SUCCESS) {
-        printf("%d", status);
-        return status;
-    }
-    WIFI_GetIP_Address(ip_address);
-    status = nx_ip_create(&global_data->nx_ip, "NX IP Instance 0",
-                          IP_ADDRESS(ip_address[0], ip_address[1], ip_address[2], ip_address[3]),
-                          0xFFFFFF00UL,
-                          &global_data->nx_pool, NULL, NULL, 0, 0);
-    if (status != NX_SUCCESS) {
-        printf("%d", status);
-        return status;
-    }
-    status = nx_wifi_initialize(&global_data->nx_ip, &global_data->nx_pool);
-    if (status != NX_SUCCESS) {
-        printf("%d", status);
-        return status;
-    }
-    return status;
-}
-
-
-/**
- * @brief cleanup NetX Duo wifi data
- * @param global_data: pointer to the global data structure
- * @return
- */
-UINT cleanup_nx_wifi(struct global_data_t* global_data) {
-    UINT status;
-    status = nx_ip_delete(&global_data->nx_ip);
-    if (status != NX_SUCCESS) {
-        printf("%d", status);
-        return status;
-    }
-    status = nx_packet_pool_delete(&global_data->nx_pool);
-    if (status != NX_SUCCESS) {
-        printf("%d", status);
-        return status;
-    }
-    return status;
-}
-
-
-/**
- * @brief setup the netx duo MQTT client
- * @param global_data: pointer to the global data structure
- * @return
- */
-UINT setup_nx_mqtt_and_connect(struct global_data_t* global_data) {
-    UINT status;
-    status = nxd_mqtt_client_create(&global_data->mqtt_client, "MQTT Client", "le_board", sizeof("le_board") - 1,
-                           &global_data->nx_ip, &global_data->nx_pool,
-                           (void*)&global_data->mqtt_client_stack, sizeof(global_data->mqtt_client_stack),
-                           2, NX_NULL, 0);
-    if (status != NX_SUCCESS)
-        return status;
-    tx_event_flags_create(&global_data->mqtt_event_flags, "mqtt events");
-
-    global_data->mqtt_server_ip.nxd_ip_version = 4;
-    global_data->mqtt_server_ip.nxd_ip_address.v4 = MQTT_BROKER_IP;
-    status = nxd_mqtt_client_connect(&global_data->mqtt_client, &global_data->mqtt_server_ip, NXD_MQTT_PORT,
-                                     300, 0, NX_WAIT_FOREVER);
-    return status;
-}
-
-
-/**
- * @brief cleanup nx MQTT client data structures
- * @param global_data: pointer to the global data structure
- */
-void cleanup_nx_mqtt(struct global_data_t* global_data) {
-    UINT status;
-    status = nxd_mqtt_client_disconnect(&global_data->mqtt_client);
-    printf("%d", status);
-    status = nxd_mqtt_client_delete(&global_data->mqtt_client);
-    printf("%d", status);
-}
-
-
-/**
- * @brief sends a message with the topic given to the MQTT client
- * @param global_data: pointer to the global data structure
- * @param topic: pointer to the topic buffer (should be null-terminated)
- * @param message: pointer to the message buffer (should be null-terminated)
- * @return status of the client
- */
-UINT send_nx_mqtt_message(struct global_data_t* global_data,
-                          char* topic, char* message) {
-    UINT status;
-    tx_mutex_get(&global_data->mutex_mqtt, TX_WAIT_FOREVER);
-    status = nxd_mqtt_client_publish(&global_data->mqtt_client,
-                                     topic, strlen(topic),
-                                     message, strlen(message),
-                                     0, 1, NX_WAIT_FOREVER);
-    tx_mutex_put(&global_data->mutex_mqtt);
-    return status;
 }
 
 
@@ -454,21 +253,6 @@ void reset_network_thread(struct global_data_t* global_data) {
 
 
 /**
- * @brief format temperature message for sending via some protocol (such as mqtt)
- * @param global_data: pointer to the global data structure
- * @param message: message buffer
- * @param message_size: size of message buffer
- */
-void get_temperature_message(struct global_data_t* global_data, char* message, size_t message_size) {
-    tx_mutex_get(&global_data->mutex_i2c2, TX_WAIT_FOREVER);
-    float temperature = BSP_TSENSOR_ReadTemp();
-    uint32_t current_tick = tx_time_get();
-    tx_mutex_put(&global_data->mutex_i2c2);
-    snprintf(message, message_size, "time: %lu, temp: %.2f degC", current_tick, temperature);
-}
-
-
-/**
  * @brief thread that reads the temperature sensor value at given interval
  * @param global_data_ulong ->interval_temperature: interval in seconds to read the tsensor
  */
@@ -497,23 +281,6 @@ _Noreturn void thread_temperature(ULONG global_data_ulong) {
         }
         tx_thread_sleep(period_ticks);
     }
-}
-
-
-/**
- * @brief format accelerometer message for sending via some protocol (such as mqtt)
- * @param global_data: pointer to the global data structure
- * @param message: message buffer
- * @param message_size: size of message buffer
- */
-void get_accelerometer_message(struct global_data_t* global_data, char* message, size_t message_size) {
-    int16_t current_xyz[3];
-    tx_mutex_get(&global_data->mutex_i2c2, TX_WAIT_FOREVER);
-    BSP_ACCELERO_AccGetXYZ(current_xyz);
-    uint32_t current_tick = tx_time_get();
-    tx_mutex_put(&global_data->mutex_i2c2);
-    snprintf(message, message_size, "time: %lu, xl: %.2hd %.2hd %.2hd",
-             current_tick, current_xyz[0], current_xyz[1], current_xyz[2]);
 }
 
 

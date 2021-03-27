@@ -23,7 +23,7 @@ set(TX_USER_FILE "${CMAKE_SOURCE_DIR}/Core/Inc/tx_user.h" CACHE STRING "Enable T
 set(NX_USER_FILE "${CMAKE_SOURCE_DIR}/Core/Inc/nx_user.h" CACHE STRING "Enable NX user configuration")
 
 # project settings
-project(ee5450-module2-hw0 C CXX ASM)
+project(ee5450-module2-hw1 C CXX ASM)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 

@@ -32,12 +32,54 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "tx_api.h"
+#include "nx_api.h"
+#include "nx_wifi.h"
+#include "cmsis_utils.h"
+#include "stm32l4s5i_iot01_accelero.h"
+#include "stm32l4s5i_iot01_tsensor.h"
+#include "wifi.h"
+#include "nxd_mqtt_client.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+#define STACK_SIZE 4096
+#define BYTE_POOL_SIZE 32768
+#define TX_PACKET_COUNT 20
+#define TX_PACKET_SIZE 1200  // default payload size from ES_WIFI_PAYLOAD_SIZE
+#define TX_POOL_SIZE ((TX_PACKET_SIZE + sizeof(NX_PACKET)) * TX_PACKET_COUNT)
 
+#define EVT_BUTTON_PRESSED 0x1
+#define EVT_WIFI_READY 0x4
+
+struct global_data_t {
+    /* thread memory area */
+    UCHAR memory_area[BYTE_POOL_SIZE];
+    TX_BYTE_POOL byte_pool_0;
+    TX_THREAD threads[5];
+    TX_THREAD thread_network_setup;
+    TX_MUTEX mutex_i2c2;
+    TX_MUTEX mutex_mqtt;
+    TX_MUTEX mutex_network_reset;
+
+    /* netx memory area */
+    NX_IP nx_ip;
+    NX_PACKET_POOL nx_pool;
+    UCHAR nx_ip_pool[TX_POOL_SIZE];
+    NXD_ADDRESS mqtt_server_ip;
+    ULONG mqtt_client_stack[STACK_SIZE / sizeof(ULONG)];
+    NXD_MQTT_CLIENT mqtt_client;
+    TX_EVENT_FLAGS_GROUP mqtt_event_flags;
+
+    /* thread input parameters */
+    ULONG interval_ld1;
+    ULONG interval_ld2;
+    ULONG interval_temperature;
+    ULONG interval_accelerometer;
+    ULONG interval_mqtt;
+    // TODO: Add more input parameters here as needed.
+};
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

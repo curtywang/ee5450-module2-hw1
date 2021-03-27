@@ -5,9 +5,9 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="ee5450-module2-hw0" targetName="threadx" />
-      <config projectName="ee5450-module2-hw0" targetName="netxduo" />
-      <config projectName="ee5450-module2-hw0" targetName="ee5450-module2-hw0.elf" />
+      <config projectName="ee5450-module2-hw1" targetName="threadx" />
+      <config projectName="ee5450-module2-hw1" targetName="ee5450-module2-hw1.elf" />
+      <config projectName="ee5450-module2-hw1" targetName="netxduo" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -17,7 +17,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a8530759-449d-4624-b9d3-1183016fe538" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Core/Inc/sensor_telemetry.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Core/Inc/sensor_telemetry_setup.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Core/Src/sensor_telemetry.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Core/Src/sensor_telemetry_setup.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/OCD_ee5450_module2_hw0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/OCD_ee5450_module2_hw0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core/Inc/main.h" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Inc/main.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Core/Src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Src/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ee5450-module2-notes.ioc" beforeDir="false" afterPath="$PROJECT_DIR$/ee5450-module2-hw1.ioc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +70,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Core" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="CMakeSettings" />
   </component>
@@ -80,22 +91,22 @@
     </key>
   </component>
   <component name="RunManager" selected="OpenOCD Download &amp; Run.OCD ee5450-module2-hw0">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ee5450-module2-hw0.elf" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ee5450-module2-hw0" TARGET_NAME="ee5450-module2-hw0.elf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ee5450-module2-hw0" RUN_TARGET_NAME="ee5450-module2-hw0.elf">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="netxduo" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ee5450-module2-hw0" TARGET_NAME="netxduo" CONFIG_NAME="Debug">
+    <configuration name="ee5450-module2-hw1.elf" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ee5450-module2-hw1" TARGET_NAME="ee5450-module2-hw1.elf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ee5450-module2-hw1" RUN_TARGET_NAME="ee5450-module2-hw1.elf">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="threadx" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ee5450-module2-hw0" TARGET_NAME="threadx" CONFIG_NAME="Debug">
+    <configuration name="netxduo" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ee5450-module2-hw1" TARGET_NAME="netxduo" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="threadx" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ee5450-module2-hw1" TARGET_NAME="threadx" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -106,7 +117,7 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="CMake Application.ee5450-module2-hw0.elf" />
+      <item itemvalue="CMake Application.ee5450-module2-hw1.elf" />
       <item itemvalue="CMake Application.netxduo" />
       <item itemvalue="CMake Application.threadx" />
       <item itemvalue="OpenOCD Download &amp; Run.OCD ee5450-module2-hw0" />
@@ -123,6 +134,7 @@
       <workItem from="1615495426818" duration="11560000" />
       <workItem from="1615936195325" duration="1508000" />
       <workItem from="1616105918615" duration="71846000" />
+      <workItem from="1616870615664" duration="7836000" />
     </task>
     <servers />
   </component>
@@ -146,12 +158,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/Core/Src/main.c</url>
-          <line>378</line>
+          <line>177</line>
           <option name="timeStamp" value="81" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/Core/Src/main.c</url>
-          <line>447</line>
+          <line>246</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
       </breakpoints>
