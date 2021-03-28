@@ -42,7 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static TX_EVENT_FLAGS_GROUP global_event_flags;
+TX_EVENT_FLAGS_GROUP global_event_flags;
 TX_BYTE_POOL global_byte_pool;
 ULONG global_memory_area[(sizeof(struct global_data_t) / sizeof(ULONG)) + 10 * sizeof(ULONG)];
 /* USER CODE END PV */

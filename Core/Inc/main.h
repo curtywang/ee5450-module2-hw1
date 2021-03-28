@@ -53,6 +53,8 @@ extern "C" {
 #define EVT_BUTTON_PRESSED 0x1
 #define EVT_WIFI_READY 0x4
 
+extern TX_EVENT_FLAGS_GROUP global_event_flags;
+
 struct global_data_t {
     /* thread memory area */
     UCHAR memory_area[BYTE_POOL_SIZE];

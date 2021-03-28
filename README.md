@@ -35,7 +35,7 @@ in `main.c`, but the actual pointer is only allocated inside
 `tx_application_define` to take advantage of ThreadX's byte allocation
 feature.
 
-### `main.c`: `static TX_EVENT_FLAGS_GROUP global_event_flags`: system-wide software interrupts
+### `main.c`: `extern TX_EVENT_FLAGS_GROUP global_event_flags`: system-wide software interrupts
 This global event flag group is to provide system-wide software interrupts. 
 The event `#define`s are public in `main.h` and begin with `EVT_`.
 

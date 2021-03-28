@@ -17,18 +17,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a8530759-449d-4624-b9d3-1183016fe538" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Core/Inc/sensor_telemetry.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/Inc/sensor_telemetry_setup.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/Src/sensor_telemetry.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Core/Src/sensor_telemetry_setup.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/OCD_ee5450_module2_hw0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/OCD_ee5450_module2_hw0.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Core/Inc/main.h" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Inc/main.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Core/Src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/Core/Src/main.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ee5450-module2-notes.ioc" beforeDir="false" afterPath="$PROJECT_DIR$/ee5450-module2-hw1.ioc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,7 +126,7 @@
       <workItem from="1615495426818" duration="11560000" />
       <workItem from="1615936195325" duration="1508000" />
       <workItem from="1616105918615" duration="71846000" />
-      <workItem from="1616870615664" duration="7836000" />
+      <workItem from="1616870615664" duration="8267000" />
     </task>
     <servers />
   </component>
