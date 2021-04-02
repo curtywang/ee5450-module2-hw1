@@ -45,7 +45,7 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 #define STACK_SIZE 4096
-#define BYTE_POOL_SIZE 32768
+#define BYTE_POOL_SIZE 65536
 #define TX_PACKET_COUNT 20
 #define TX_PACKET_SIZE 1200  // default payload size from ES_WIFI_PAYLOAD_SIZE
 #define TX_POOL_SIZE ((TX_PACKET_SIZE + sizeof(NX_PACKET)) * TX_PACKET_COUNT)
